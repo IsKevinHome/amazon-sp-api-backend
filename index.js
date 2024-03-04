@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 
 app.get('/api/oauth/callback', async (req, res) => {
   const code = req.query.spapi_oauth_code;
-  console.log('~~~code~~~', code);
+  console.log('~~~req.query~~~', req.query);
 
   try {
     const tokenResponse = await axios.post(

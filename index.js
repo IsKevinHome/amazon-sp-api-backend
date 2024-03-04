@@ -12,8 +12,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/stopserver', (req, res) => {
-  console.log('Stopping server');
+  console.log('!!! Stopping server !!!');
   process.exit(1);
+});
+
+app.get('/api/oauth/amazon', (req, res) => {
+  console.log(req.query);
+  res.send({
+    status: 'success',
+    request: req.query,
+  });
 });
 
 app.listen(port, () => {

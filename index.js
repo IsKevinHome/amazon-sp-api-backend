@@ -21,30 +21,45 @@ app.get('/api/oauth/callback', async (req, res) => {
 
   const { spapi_oauth_code: code, state, selling_partner_id } = req.query;
   console.log('✨code✨', code);
-  //   console.log('~~~req.query~~~', req.query);
-  //   try {
-  //     const tokenResponse = await axios.post(
-  //       'https://api.amazon.com/auth/o2/token',
-  //       querystring.stringify({
-  //         grant_type: 'authorization_code',
-  //         code,
-  //         client_id: CLIENT_ID,
-  //         client_secret: CLIENT_SECRET,
-  //         redirect_uri: REDIRECT_URI,
-  //       })
-  //     );
-  //     const accessToken = tokenResponse.data.access_token;
-  //     console.log('~~~logged access token~~~', accessToken);
-  //     res.send(`~~~Access Token~~~: ${accessToken}`);
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     res
-  //       .status(500)
-  //       .send('Error exchanging authorization code for access token');
-  //   }
-  //   res.send({
-  //     request: req.query,
-  //   });
+
+  try {
+    const tokenResponse = await axios.post(
+      'https://api.amazon.com/auth/o2/token',
+      {
+        grant_type: 'authorization_code',
+        code,
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        redirect_uri: REDIRECT_URI,
+      }
+    );
+    const accessToken = tokenResponse.data.access_token;
+    const refreshToken = tokenResponse.data.refresh_token;
+
+    console.log('✨refreshToken✨', refreshToken);
+    console.log('✨accessToken✨', accessToken);
+
+    res.redirect(
+      '/api/oauth/success?refreshToken=' +
+        refreshToken +
+        '&accessToken=' +
+        accessToken
+    );
+  } catch (error) {
+    console.error('Error:', error);
+    res
+      .status(500)
+      .send('Error exchanging authorization code for access token');
+  }
+});
+
+app.get('/api/oauth/success', (req, res) => {
+  const { refreshToken, accessToken } = req.query;
+
+  res.send({
+    refreshToken,
+    accessToken,
+  });
 });
 
 app.listen(port, () => {
